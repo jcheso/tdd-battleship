@@ -14,6 +14,8 @@ const Gameboard = () => {
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   ];
 
+  let shipsArray = [];
+
   const isOutOfBounds = (ship, x, y, direction) => {
     // Check if y + length of ship is greater than board.length - 1
     if (x + ship.length > board.length && direction === "vertical") {
@@ -43,6 +45,7 @@ const Gameboard = () => {
       !isOutOfBounds(ship, x, y, direction) &&
       isBoardClear(ship, x, y, direction)
     ) {
+      shipsArray.push(ship);
       for (let i = 0; i < ship.length; i++) {
         board[x][y + i] = { ship, i };
       }
@@ -51,11 +54,13 @@ const Gameboard = () => {
       !isOutOfBounds(ship, x, y, direction) &&
       isBoardClear(ship, x, y, direction)
     ) {
+      shipsArray.push(ship);
       for (let i = 0; i < ship.length; i++) {
         board[x + i][y] = { ship, i };
       }
     } else return "You cannot place a ship here";
   };
+
   // Receive attack function that takes coordinates and determines if ship has been hit
   const receiveAttack = (x, y) => {
     if (
@@ -64,21 +69,46 @@ const Gameboard = () => {
     ) {
       board[x][y].ship.hit(board[x][y].i);
       return "Hit";
-    } else if (board[x][y].ship.hitArray[board[x][y].i] === "hit") {
+    } else if (
+      (typeof board[x][y] == "object" &&
+        board[x][y].ship.hitArray[board[x][y].i] === "hit") ||
+      board[x][y] === "miss"
+    ) {
       return "You've already hit here";
-    } else return "Miss";
+    } else {
+      trackMissedHits(x, y);
+    }
   };
 
   // Keep track of missed hits
-  // Report whether or not all ships are sunk
+  const trackMissedHits = (x, y) => {
+    board[x][y] = "miss";
+  };
 
-  return { board, placeShip, isOutOfBounds, receiveAttack };
+  // Report whether or not all ships are sunk
+  const checkForLoss = () => {
+    let sunkCount = 0;
+    shipsArray.forEach((ship, index) => {
+      if (ship.isSunk() === true) sunkCount++;
+    });
+    if (sunkCount === shipsArray.length) return true;
+    else return false;
+  };
+
+  return {
+    board,
+    placeShip,
+    isOutOfBounds,
+    receiveAttack,
+    shipsArray,
+    checkForLoss,
+  };
 };
 
 module.exports = Gameboard;
 
 const playerBoard = Gameboard();
-const newShip = Ship("destroyer");
-playerBoard.placeShip(newShip, 5, 6, "horizontal");
-playerBoard.receiveAttack(5, 7);
-playerBoard.receiveAttack(5, 7);
+const newShip = Ship("patrolBoat");
+playerBoard.placeShip(newShip, 5, 2, "horizontal");
+playerBoard.receiveAttack(5, 2);
+playerBoard.checkForLoss();

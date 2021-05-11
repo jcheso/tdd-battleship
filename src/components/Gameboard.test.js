@@ -56,12 +56,12 @@ test("Ship receives an attack", () => {
   expect(playerBoard.receiveAttack(5, 7)).toBe("Hit");
 });
 
-test("Ship misses an attack", () => {
-  const playerBoard = Gameboard();
-  const newShip = Ship("destroyer");
-  playerBoard.placeShip(newShip, 5, 6, "horizontal");
-  expect(playerBoard.receiveAttack(6, 9)).toBe("Miss");
-});
+// test("Ship misses an attack", () => {
+//   const playerBoard = Gameboard();
+//   const newShip = Ship("destroyer");
+//   playerBoard.placeShip(newShip, 5, 6, "horizontal");
+//   expect(playerBoard.receiveAttack(6, 9)).toBe("Miss");
+// });
 
 test("Ship receives an attack in the same location", () => {
   const playerBoard = Gameboard();
@@ -69,4 +69,36 @@ test("Ship receives an attack in the same location", () => {
   playerBoard.placeShip(newShip, 5, 6, "horizontal");
   playerBoard.receiveAttack(5, 7);
   expect(playerBoard.receiveAttack(5, 7)).toBe("You've already hit here");
+});
+
+test("Ship misses an attack and records it on board", () => {
+  const playerBoard = Gameboard();
+  const newShip = Ship("destroyer");
+  playerBoard.placeShip(newShip, 5, 6, "horizontal");
+  playerBoard.receiveAttack(6, 9);
+  expect(playerBoard.board[6][9]).toBe("miss");
+});
+
+test("Cannot attack a spot that has already been missed", () => {
+  const playerBoard = Gameboard();
+  const newShip = Ship("destroyer");
+  playerBoard.placeShip(newShip, 5, 6, "horizontal");
+  playerBoard.receiveAttack(6, 9);
+  expect(playerBoard.receiveAttack(6, 9)).toBe("You've already hit here");
+});
+
+test("Ship is placed at location horizontally and is added to ships", () => {
+  const playerBoard = Gameboard();
+  const newShip = Ship("destroyer");
+  playerBoard.placeShip(newShip, 5, 2, "horizontal");
+  expect(playerBoard.shipsArray[0].id).toBe("destroyer");
+});
+
+test("Sink ship and check if checkForLoss returns true", () => {
+  const playerBoard = Gameboard();
+  const newShip = Ship("patrolBoat");
+  playerBoard.placeShip(newShip, 5, 2, "horizontal");
+  playerBoard.receiveAttack(5, 2);
+  playerBoard.receiveAttack(5, 3);
+  expect(playerBoard.checkForLoss()).toBe(true);
 });
