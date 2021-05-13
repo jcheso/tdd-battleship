@@ -1,5 +1,3 @@
-const Ship = require("./Ship");
-
 const Gameboard = () => {
   let board = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -106,9 +104,3 @@ const Gameboard = () => {
 };
 
 module.exports = Gameboard;
-
-const playerBoard = Gameboard();
-const newShip = Ship("patrolBoat");
-playerBoard.placeShip(newShip, 5, 2, "horizontal");
-playerBoard.receiveAttack(5, 2);
-playerBoard.checkForLoss();

@@ -102,3 +102,12 @@ test("Sink ship and check if checkForLoss returns true", () => {
   playerBoard.receiveAttack(5, 3);
   expect(playerBoard.checkForLoss()).toBe(true);
 });
+
+test("Do not sink ship and check if checkForLoss returns true", () => {
+  const playerBoard = Gameboard();
+  const newShip = Ship("patrolBoat");
+  playerBoard.placeShip(newShip, 5, 2, "horizontal");
+  playerBoard.receiveAttack(5, 2);
+  playerBoard.receiveAttack(5, 3);
+  expect(playerBoard.checkForLoss()).toBe(true);
+});
