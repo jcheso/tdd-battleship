@@ -4,6 +4,7 @@ import Gameboard from "./components/Gameboard";
 import Player from "./components/Player";
 import Ship from "./components/Ship";
 import GameTile from "./components/GameTile";
+var uniqid = require("uniqid");
 
 function App() {
   /* Create header, footer, use the boards as states, update state each time a move is made
@@ -23,22 +24,24 @@ function App() {
   const computer = Player("computer");
 
   const playerDestroyer = Ship("destroyer");
-  playerBoard.placeShip(playerDestroyer, 2,3, "horizontal" );
+  playerBoard.placeShip(playerDestroyer, 2, 3, "horizontal");
 
   const playerBattleship = Ship("battleship");
-  playerBoard.placeShip(playerBattleship);
+  playerBoard.placeShip(playerBattleship, 1, 1, "vertical");
 
   const playerCarrier = Ship("carrier");
-  playerBoard.placeShip(playerCarrier);
+  playerBoard.placeShip(playerCarrier, 8, 3, "horizontal");
 
   const playerSubmarine = Ship("submarine");
-  playerBoard.placeShip(playerSubmarine);
+  playerBoard.placeShip(playerSubmarine, 4, 6, "vertical");
 
   const playerPatrolBoat = Ship("patrolBoat");
-  playerBoard.placeShip(playerPatrolBoat);
+  playerBoard.placeShip(playerPatrolBoat, 1, 8, "vertical");
 
   const [boardState, setBoardState] = useState([playerBoard, computerBoard]);
   const [playerState, setPlayerState] = useState([player, computer]);
+
+  const getXY = (rowIndex, columnIndex) => [rowIndex, columnIndex];
 
   return (
     <div>
@@ -51,9 +54,15 @@ function App() {
             <h3>Player</h3>
           </div>
           <div className="board-container">
-            {boardState[0].board.map((row, index) =>
-              row.map((tile, sIndex) => (
-                <GameTile tile={tile} sIndex={sIndex} />
+            {boardState[0].board.map((row, rowIndex) =>
+              row.map((tile, columnIndex) => (
+                <GameTile
+                  state={boardState[0]}
+                  tile={tile}
+                  rowIndex={rowIndex}
+                  columnIndex={columnIndex}
+                  key={uniqid()}
+                />
               ))
             )}
           </div>
@@ -63,11 +72,17 @@ function App() {
             <h3>Computer</h3>
           </div>
           <div className="board-container">
-            {boardState[1].board.map((row, index) =>
-              row.map((tile, sIndex) => (
-                <div className="board-tile" key={sIndex}>
-                  {tile}
-                </div>
+            {boardState[1].board.map((row, rowIndex) =>
+              row.map((tile, columnIndex) => (
+                <GameTile
+                  state={boardState[1]}
+                  setState={setBoardState}
+                  onClick={computerBoard.receiveAttack}
+                  tile={tile}
+                  rowIndex={rowIndex}
+                  columnIndex={columnIndex}
+                  key={uniqid()}
+                />
               ))
             )}
           </div>

@@ -1,3 +1,5 @@
+import React, { useState } from "react";
+
 const Gameboard = () => {
   let board = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -66,21 +68,17 @@ const Gameboard = () => {
       board[x][y].ship.hitArray[board[x][y].i] !== "hit"
     ) {
       board[x][y].ship.hit(board[x][y].i);
-      return "Hit";
+      console.log("hit");
     } else if (
       (typeof board[x][y] == "object" &&
         board[x][y].ship.hitArray[board[x][y].i] === "hit") ||
       board[x][y] === "miss"
     ) {
-      return "You've already hit here";
+      console.log("You've already fired here");
     } else {
-      trackMissedHits(x, y);
+      board[x][y] = "miss";
+      console.log("miss");
     }
-  };
-
-  // Keep track of missed hits
-  const trackMissedHits = (x, y) => {
-    board[x][y] = "miss";
   };
 
   // Report whether or not all ships are sunk
@@ -103,4 +101,4 @@ const Gameboard = () => {
   };
 };
 
-module.exports = Gameboard;
+export default  Gameboard
