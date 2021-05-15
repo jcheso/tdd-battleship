@@ -4,6 +4,8 @@ import Gameboard from "./components/Gameboard";
 import Player from "./components/Player";
 import Ship from "./components/Ship";
 import GameTile from "./components/GameTile";
+import GameTilePlayer from "./components/GameTilePlayer";
+
 var uniqid = require("uniqid");
 
 function App() {
@@ -22,6 +24,9 @@ function App() {
 
   const player = Player("player");
   const computer = Player("computer");
+
+  const computerDestroyer = Ship("destroyer");
+  computerBoard.placeShip(computerDestroyer, 5, 3, "horizontal");
 
   const playerDestroyer = Ship("destroyer");
   playerBoard.placeShip(playerDestroyer, 2, 3, "horizontal");
@@ -56,8 +61,7 @@ function App() {
           <div className="board-container">
             {boardState[0].board.map((row, rowIndex) =>
               row.map((tile, columnIndex) => (
-                <GameTile
-                  state={boardState[0]}
+                <GameTilePlayer
                   tile={tile}
                   rowIndex={rowIndex}
                   columnIndex={columnIndex}
@@ -75,8 +79,6 @@ function App() {
             {boardState[1].board.map((row, rowIndex) =>
               row.map((tile, columnIndex) => (
                 <GameTile
-                  state={boardState[1]}
-                  setState={setBoardState}
                   onClick={computerBoard.receiveAttack}
                   tile={tile}
                   rowIndex={rowIndex}

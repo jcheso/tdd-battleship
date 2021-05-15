@@ -26,6 +26,7 @@ const Ship = (shipClass) => {
   const hit = (hitLocation) => {
     if (hitArray[hitLocation] !== "hit") {
       hitArray[hitLocation] = "hit";
+      isSunk();
     } else {
       return "This location has already been hit";
     }
@@ -37,6 +38,7 @@ const Ship = (shipClass) => {
     });
 
     if (countHitArray.length === length) {
+      console.log("Ship is sunk");
       return true;
     }
   };
