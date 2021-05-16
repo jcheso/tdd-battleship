@@ -1,84 +1,118 @@
 import "./App.css";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Gameboard from "./components/Gameboard";
 import Player from "./components/Player";
 import Ship from "./components/Ship";
 import GameTileComputer from "./components/GameTileComputer";
 import GameTilePlayer from "./components/GameTilePlayer";
+import _, { random } from "underscore";
 
 var uniqid = require("uniqid");
 
 function App() {
-  const playerBoard = Gameboard();
-  const computerBoard = Gameboard();
+  const [computerBoard, setComputerBoard] = useState(Gameboard());
+  const [playerBoard, setPlayerBoard] = useState(Gameboard());
+  const [playerState, setPlayerState] = useState(Player("player", true));
+  const [computerState, setComputerState] = useState(Player("computer", false));
+  const [shipCount, setShipCount] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [direction, setDirection] = useState("horizontal");
 
-  const player = Player("player");
-  const computer = Player("computer");
-  // Let player make first move
-  player.turn = true;
+  const computerShipList = [
+    Ship("destroyer"),
+    Ship("destroyer"),
+    Ship("battleship"),
+    Ship("carrier"),
+    Ship("submarine"),
+    Ship("submarine"),
+    Ship("patrolBoat"),
+  ];
 
-  const computerDestroyer = Ship("destroyer");
-  computerBoard.placeShip(computerDestroyer, 2, 3, "horizontal");
+  const playerShipList = [
+    Ship("destroyer"),
+    Ship("destroyer"),
+    Ship("battleship"),
+    Ship("carrier"),
+    Ship("submarine"),
+    Ship("submarine"),
+    Ship("patrolBoat"),
+  ];
 
-  const playerDestroyer = Ship("destroyer");
-  playerBoard.placeShip(playerDestroyer, 2, 3, "horizontal");
+  useEffect(() => {
+    setComputerBoard((currentBoard) => {
+      const tempBoard = _.clone(currentBoard);
 
-  const playerBattleship = Ship("battleship");
-  playerBoard.placeShip(playerBattleship, 1, 1, "vertical");
+      const randomDirection = () => {
+        const number = Math.round(Math.random());
+        return number === 1 ? "horizontal" : "vertical";
+      };
+      let computerShipCount = 0;
+      while (computerShipCount < computerShipList.length) {
+        const x = computerState.generateAttack().x;
+        const y = computerState.generateAttack().y;
+        const direction = randomDirection();
+        const ship = computerShipList[computerShipCount];
+        console.log(x, y, direction, ship);
 
-  const computerBattleship = Ship("battleship");
-  computerBoard.placeShip(computerBattleship, 1, 1, "vertical");
+        if (
+          computerBoard.isBoardClear(ship, x, y, direction) &&
+          !computerBoard.isOutOfBounds(ship, x, y, direction)
+        ) {
+          tempBoard.placeShip(ship, x, y, direction);
+          computerShipCount++;
+        }
+      }
 
-  const playerCarrier = Ship("carrier");
-  playerBoard.placeShip(playerCarrier, 8, 3, "horizontal");
+      return tempBoard;
+    });
+  }, []);
 
-  const computerCarrier = Ship("carrier");
-  computerBoard.placeShip(computerCarrier, 8, 3, "horizontal");
-
-  const playerSubmarine = Ship("submarine");
-  playerBoard.placeShip(playerSubmarine, 4, 6, "vertical");
-
-  const computerSubmarine = Ship("submarine");
-  computerBoard.placeShip(computerSubmarine, 4, 6, "vertical");
-
-  const playerPatrolBoat = Ship("patrolBoat");
-  playerBoard.placeShip(playerPatrolBoat, 1, 8, "vertical");
-
-  const computerPatrolBoat = Ship("patrolBoat");
-  computerBoard.placeShip(computerPatrolBoat, 1, 8, "vertical");
-
-  const [boardState, setBoardState] = useState({ playerBoard, computerBoard });
-  const [playerState, setPlayerState] = useState({ player, computer });
-  const [testState, setTestState] = useState(player);
+  const placeShip = (x, y) => {
+    if (shipCount < playerShipList.length) {
+      if (
+        !playerBoard.isOutOfBounds(
+          playerShipList[shipCount],
+          x,
+          y,
+          direction
+        ) &&
+        playerBoard.isBoardClear(playerShipList[shipCount], x, y, direction)
+      ) {
+        setPlayerBoard((currentBoard) => {
+          const tempBoard = _.clone(currentBoard);
+          tempBoard.placeShip(playerShipList[shipCount], x, y, direction);
+          return tempBoard;
+        });
+        setShipCount(shipCount + 1);
+        console.log(shipCount);
+      }
+    } else {
+      alert("All ships placed, start attacking the enemy");
+    }
+  };
 
   const gameLoop = (x, y) => {
-    console.log("Player has lost:" + playerBoard.checkForLoss());
-    console.log("Computer has lost:" + computerBoard.checkForLoss());
     // Run the game until either side loses
     if (
       playerBoard.checkForLoss() === false &&
       computerBoard.checkForLoss() === false
     ) {
       // If it is the players turn, let the computerBoard receive an attack and set to false
-      if (playerState.player.turn === true) {
-        computerBoard.receiveAttack(x, y);
-        setPlayerState((currentPlayerState) => {
-          const tempState = currentPlayerState;
-          tempState.player.turn = false;
-          tempState.computer.turn = true;
-          return tempState;
+      if (!loading) {
+        setComputerBoard((currentBoard) => {
+          const tempBoard = _.clone(currentBoard);
+          tempBoard.receiveAttack(x, y);
+          return tempBoard;
         });
+        setLoading(true);
         setTimeout(() => {
-          if (playerState.computer.turn === true) {
-            const computerAttack = computer.generateAttack();
-            playerBoard.receiveAttack(computerAttack.x, computerAttack.y);
-            setPlayerState((currentPlayerState) => {
-              const tempState = currentPlayerState;
-              tempState.player.turn = true;
-              tempState.computer.turn = false;
-              return tempState;
-            });
-          }
+          const computerAttack = computerState.generateAttack();
+          setPlayerBoard((currentBoard) => {
+            const tempBoard = _.clone(currentBoard);
+            tempBoard.receiveAttack(computerAttack.x, computerAttack.y);
+            return tempBoard;
+          });
+          setLoading(false);
         }, 500);
       }
     }
@@ -102,34 +136,60 @@ function App() {
             <h3>Player</h3>
           </div>
           <div className="board-container">
-            {boardState.playerBoard.board.map((row, rowIndex) =>
-              row.map((tile, columnIndex) => (
-                <GameTilePlayer
-                  tile={tile}
-                  rowIndex={rowIndex}
-                  columnIndex={columnIndex}
-                  key={uniqid()}
-                />
-              ))
+            {["", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J"].map(
+              (letter) => (
+                <div className="board-tile-heading">{letter}</div>
+              )
             )}
+            {playerBoard.board.map((row, rowIndex) => (
+              <>
+                <div className="board-tile-heading">{rowIndex + 1}</div>
+                {row.map((tile, columnIndex) => (
+                  <GameTilePlayer
+                    onClick={placeShip}
+                    tile={tile}
+                    rowIndex={rowIndex}
+                    columnIndex={columnIndex}
+                    key={uniqid()}
+                  />
+                ))}
+              </>
+            ))}
           </div>
+          <button
+            onClick={() =>
+              setDirection((currentDirection) =>
+                currentDirection === "vertical" ? "horizontal" : "vertical"
+              )
+            }
+          >
+            {direction}
+          </button>
         </div>
         <div className="side">
           <div className="board-heading">
             <h3>Computer</h3>
           </div>
           <div className="board-container">
-            {boardState.computerBoard.board.map((row, rowIndex) =>
-              row.map((tile, columnIndex) => (
-                <GameTileComputer
-                  onClick={gameLoop}
-                  tile={tile}
-                  rowIndex={rowIndex}
-                  columnIndex={columnIndex}
-                  key={uniqid()}
-                />
-              ))
+            {["", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J"].map(
+              (letter) => (
+                <div className="board-tile-heading">{letter}</div>
+              )
             )}
+            {computerBoard.board.map((row, rowIndex) => (
+              <>
+                <div className="board-tile-heading">{rowIndex + 1}</div>
+                {row.map((tile, columnIndex) => (
+                  <GameTileComputer
+                    onClick={gameLoop}
+                    tile={tile}
+                    rowIndex={rowIndex}
+                    columnIndex={columnIndex}
+                    key={uniqid()}
+                  />
+                ))}
+              </>
+            ))}
           </div>
         </div>
       </div>

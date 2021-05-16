@@ -1,6 +1,5 @@
-const Player = (playerName) => {
+const Player = (playerName, turn) => {
   const name = playerName;
-  const turn = false;
 
   const generateAttack = () => {
     const x = Math.round(Math.random() * 9);

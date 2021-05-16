@@ -1,5 +1,3 @@
-import React, { useState } from "react";
-
 const Gameboard = () => {
   let board = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -15,9 +13,7 @@ const Gameboard = () => {
   ];
 
   let shipsArray = [];
-
-  const [boardState, setBoardState] = useState(board);
-  const [sunkCount, setSunkCount] = useState(0);
+  let sunkCount = 0;
 
   const isOutOfBounds = (ship, x, y, direction) => {
     // Check if y + length of ship is greater than board.length - 1
@@ -35,7 +31,7 @@ const Gameboard = () => {
       }
     } else {
       for (let i = 0; i < ship.length; i++) {
-        if (board[x + i][y] !== 0) return false;
+        if (x + i > 9 || board[x + i][y] !== 0) return false;
       }
     }
     return true;
@@ -43,20 +39,12 @@ const Gameboard = () => {
 
   const placeShip = (ship, x, y, direction) => {
     // Need to add function to check co-ordinates are inbounds/clear
-    if (
-      direction === "horizontal" &&
-      !isOutOfBounds(ship, x, y, direction) &&
-      isBoardClear(ship, x, y, direction)
-    ) {
+    if (direction === "horizontal") {
       shipsArray.push(ship);
       for (let i = 0; i < ship.length; i++) {
         board[x][y + i] = { ship, i };
       }
-    } else if (
-      direction === "vertical" &&
-      !isOutOfBounds(ship, x, y, direction) &&
-      isBoardClear(ship, x, y, direction)
-    ) {
+    } else if (direction === "vertical") {
       shipsArray.push(ship);
       for (let i = 0; i < ship.length; i++) {
         board[x + i][y] = { ship, i };
@@ -70,13 +58,9 @@ const Gameboard = () => {
       typeof board[x][y] == "object" &&
       board[x][y].ship.hitArray[board[x][y].i] !== "hit"
     ) {
-      setBoardState((currentBoard) => {
-        const tempBoard = [...currentBoard];
-        tempBoard[x][y].ship.hit(tempBoard[x][y].i);
-        return tempBoard;
-      });
-      if (boardState[x][y].ship.isSunk() === true) {
-        setSunkCount(sunkCount + 1);
+      board[x][y].ship.hit(board[x][y].i);
+      if (board[x][y].ship.isSunk() === true) {
+        sunkCount++;
       }
     } else if (
       (typeof board[x][y] == "object" &&
@@ -85,11 +69,7 @@ const Gameboard = () => {
     ) {
       console.log("You've already fired here");
     } else {
-      setBoardState((currentBoard) => {
-        const tempBoard = [...currentBoard];
-        tempBoard[x][y] = "miss";
-        return tempBoard;
-      });
+      board[x][y] = "miss";
       console.log("miss");
     }
   };
@@ -104,6 +84,7 @@ const Gameboard = () => {
     board,
     placeShip,
     isOutOfBounds,
+    isBoardClear,
     receiveAttack,
     shipsArray,
     checkForLoss,
