@@ -3,30 +3,22 @@ import React, { useState } from "react";
 import Gameboard from "./components/Gameboard";
 import Player from "./components/Player";
 import Ship from "./components/Ship";
-import GameTile from "./components/GameTile";
+import GameTileComputer from "./components/GameTileComputer";
 import GameTilePlayer from "./components/GameTilePlayer";
 
 var uniqid = require("uniqid");
 
 function App() {
-  /* Create header, footer, use the boards as states, update state each time a move is made
-     Use a for loop to render the divs for each state. Conditional rendering for ship.id and hit/miss?
-     Logic of game -
-     placeShips: create an array of ships each player can use, loop through to instantiate
-     Call function to place each ship (maybe enter co ords for now). Change turn. Use state?
-     Once all ships are placed start the Game function
-     gameFunction: set turn, allow click on a co-ord - call receiveAttack, checkforWin,
-      switch turn
-      While loop until checkForWin returns true?
-     */
   const playerBoard = Gameboard();
   const computerBoard = Gameboard();
 
   const player = Player("player");
   const computer = Player("computer");
+  // Let player make first move
+  player.turn = true;
 
   const computerDestroyer = Ship("destroyer");
-  computerBoard.placeShip(computerDestroyer, 5, 3, "horizontal");
+  computerBoard.placeShip(computerDestroyer, 2, 3, "horizontal");
 
   const playerDestroyer = Ship("destroyer");
   playerBoard.placeShip(playerDestroyer, 2, 3, "horizontal");
@@ -34,32 +26,83 @@ function App() {
   const playerBattleship = Ship("battleship");
   playerBoard.placeShip(playerBattleship, 1, 1, "vertical");
 
+  const computerBattleship = Ship("battleship");
+  computerBoard.placeShip(computerBattleship, 1, 1, "vertical");
+
   const playerCarrier = Ship("carrier");
   playerBoard.placeShip(playerCarrier, 8, 3, "horizontal");
+
+  const computerCarrier = Ship("carrier");
+  computerBoard.placeShip(computerCarrier, 8, 3, "horizontal");
 
   const playerSubmarine = Ship("submarine");
   playerBoard.placeShip(playerSubmarine, 4, 6, "vertical");
 
+  const computerSubmarine = Ship("submarine");
+  computerBoard.placeShip(computerSubmarine, 4, 6, "vertical");
+
   const playerPatrolBoat = Ship("patrolBoat");
   playerBoard.placeShip(playerPatrolBoat, 1, 8, "vertical");
 
-  const [boardState, setBoardState] = useState([playerBoard, computerBoard]);
-  const [playerState, setPlayerState] = useState([player, computer]);
+  const computerPatrolBoat = Ship("patrolBoat");
+  computerBoard.placeShip(computerPatrolBoat, 1, 8, "vertical");
 
-  const getXY = (rowIndex, columnIndex) => [rowIndex, columnIndex];
+  const [boardState, setBoardState] = useState({ playerBoard, computerBoard });
+  const [playerState, setPlayerState] = useState({ player, computer });
+  const [testState, setTestState] = useState(player);
+
+  const gameLoop = (x, y) => {
+    console.log("Player has lost:" + playerBoard.checkForLoss());
+    console.log("Computer has lost:" + computerBoard.checkForLoss());
+    // Run the game until either side loses
+    if (
+      playerBoard.checkForLoss() === false &&
+      computerBoard.checkForLoss() === false
+    ) {
+      // If it is the players turn, let the computerBoard receive an attack and set to false
+      if (playerState.player.turn === true) {
+        computerBoard.receiveAttack(x, y);
+        setPlayerState((currentPlayerState) => {
+          const tempState = currentPlayerState;
+          tempState.player.turn = false;
+          tempState.computer.turn = true;
+          return tempState;
+        });
+        setTimeout(() => {
+          if (playerState.computer.turn === true) {
+            const computerAttack = computer.generateAttack();
+            playerBoard.receiveAttack(computerAttack.x, computerAttack.y);
+            setPlayerState((currentPlayerState) => {
+              const tempState = currentPlayerState;
+              tempState.player.turn = true;
+              tempState.computer.turn = false;
+              return tempState;
+            });
+          }
+        }, 500);
+      }
+    }
+    // Need to fix this
+    if (playerBoard.checkForLoss() === true) {
+      alert("You lost!");
+    } else if (computerBoard.checkForLoss() === true) {
+      alert("You won!");
+    }
+  };
 
   return (
     <div>
       <div className="header">
         <h1>BattleShips</h1>
       </div>
+
       <div className="row">
         <div className="side">
           <div className="board-heading">
             <h3>Player</h3>
           </div>
           <div className="board-container">
-            {boardState[0].board.map((row, rowIndex) =>
+            {boardState.playerBoard.board.map((row, rowIndex) =>
               row.map((tile, columnIndex) => (
                 <GameTilePlayer
                   tile={tile}
@@ -76,10 +119,10 @@ function App() {
             <h3>Computer</h3>
           </div>
           <div className="board-container">
-            {boardState[1].board.map((row, rowIndex) =>
+            {boardState.computerBoard.board.map((row, rowIndex) =>
               row.map((tile, columnIndex) => (
-                <GameTile
-                  onClick={computerBoard.receiveAttack}
+                <GameTileComputer
+                  onClick={gameLoop}
                   tile={tile}
                   rowIndex={rowIndex}
                   columnIndex={columnIndex}

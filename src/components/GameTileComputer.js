@@ -1,15 +1,12 @@
 import React, { useState } from "react";
-import Gameboard from "./Gameboard";
-import Player from "./Player";
-import Ship from "./Ship";
 import "../App.css";
 
-function GameTile({ onClick, tile, rowIndex, columnIndex }) {
+function GameTileComputer({ onClick, tile, rowIndex, columnIndex }) {
   //Take the gameboard tile and return the correct tile.
   if (typeof tile === "object" && tile.ship.hitArray[tile.i] !== "hit") {
     return (
       <div
-        className="board-tile-boat"
+        className="board-tile"
         onClick={() => onClick(rowIndex, columnIndex)}
       ></div>
     );
@@ -27,4 +24,4 @@ function GameTile({ onClick, tile, rowIndex, columnIndex }) {
   }
 }
 
-export default GameTile;
+export default GameTileComputer;

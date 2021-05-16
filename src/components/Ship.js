@@ -22,11 +22,9 @@ const Ship = (shipClass) => {
   }
 
   let hitArray = new Array(length);
-
   const hit = (hitLocation) => {
     if (hitArray[hitLocation] !== "hit") {
       hitArray[hitLocation] = "hit";
-      isSunk();
     } else {
       return "This location has already been hit";
     }
@@ -36,14 +34,11 @@ const Ship = (shipClass) => {
     const countHitArray = hitArray.filter((location) => {
       return location === "hit";
     });
-
     if (countHitArray.length === length) {
-      console.log("Ship is sunk");
       return true;
     }
   };
-
   return { id, length, isSunk, hit, hitArray };
 };
 
-module.exports = Ship;
+export default Ship;

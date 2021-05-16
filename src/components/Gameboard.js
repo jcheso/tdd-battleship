@@ -17,6 +17,7 @@ const Gameboard = () => {
   let shipsArray = [];
 
   const [boardState, setBoardState] = useState(board);
+  const [sunkCount, setSunkCount] = useState(0);
 
   const isOutOfBounds = (ship, x, y, direction) => {
     // Check if y + length of ship is greater than board.length - 1
@@ -74,7 +75,9 @@ const Gameboard = () => {
         tempBoard[x][y].ship.hit(tempBoard[x][y].i);
         return tempBoard;
       });
-      console.log("hit");
+      if (boardState[x][y].ship.isSunk() === true) {
+        setSunkCount(sunkCount + 1);
+      }
     } else if (
       (typeof board[x][y] == "object" &&
         board[x][y].ship.hitArray[board[x][y].i] === "hit") ||
@@ -93,10 +96,6 @@ const Gameboard = () => {
 
   // Report whether or not all ships are sunk
   const checkForLoss = () => {
-    let sunkCount = 0;
-    shipsArray.forEach((ship, index) => {
-      if (ship.isSunk() === true) sunkCount++;
-    });
     if (sunkCount === shipsArray.length) return true;
     else return false;
   };
