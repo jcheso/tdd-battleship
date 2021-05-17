@@ -25,7 +25,7 @@ function App() {
     Ship("carrier"),
     Ship("submarine"),
     Ship("submarine"),
-    Ship("patrolBoat"),
+    Ship("patrol boat"),
   ];
 
   const playerShipList = [
@@ -35,8 +35,15 @@ function App() {
     Ship("carrier"),
     Ship("submarine"),
     Ship("submarine"),
-    Ship("patrolBoat"),
+    Ship("patrol boat"),
   ];
+  const [message, setMessage] = useState("Place your destroyer");
+
+  const generateCoordinates = () => {
+    const x = Math.round(Math.random() * 9);
+    const y = Math.round(Math.random() * 9);
+    return { x, y };
+  };
 
   useEffect(() => {
     setComputerBoard((currentBoard) => {
@@ -48,8 +55,8 @@ function App() {
       };
       let computerShipCount = 0;
       while (computerShipCount < computerShipList.length) {
-        const x = computerState.generateAttack().x;
-        const y = computerState.generateAttack().y;
+        const x = generateCoordinates().x;
+        const y = generateCoordinates().y;
         const direction = randomDirection();
         const ship = computerShipList[computerShipCount];
         console.log(x, y, direction, ship);
@@ -84,10 +91,13 @@ function App() {
           return tempBoard;
         });
         setShipCount(shipCount + 1);
-        console.log(shipCount);
+        if (shipCount + 1 < playerShipList.length) {
+          setMessage(`Place your ${playerShipList[shipCount + 1].id}`);
+        }
+        if (shipCount === playerShipList.length - 1) {
+          setMessage("All ships placed, attack the enemy!");
+        }
       }
-    } else {
-      alert("All ships placed, start attacking the enemy");
     }
   };
 
@@ -95,7 +105,8 @@ function App() {
     // Run the game until either side loses
     if (
       playerBoard.checkForLoss() === false &&
-      computerBoard.checkForLoss() === false
+      computerBoard.checkForLoss() === false &&
+      shipCount === playerShipList.length
     ) {
       // If it is the players turn, let the computerBoard receive an attack and set to false
       if (!loading) {
@@ -116,24 +127,27 @@ function App() {
         }, 500);
       }
     }
-    // Need to fix this
     if (playerBoard.checkForLoss() === true) {
-      alert("You lost!");
+      setMessage("You lost!");
     } else if (computerBoard.checkForLoss() === true) {
-      alert("You won!");
+      setMessage("You won!");
     }
   };
 
   return (
     <div>
       <div className="header">
-        <h1>BattleShips</h1>
+        <h1>Battleships</h1>
       </div>
-
+      <div className="row">
+        <div className="message-board">
+          <div>{message}</div>
+        </div>
+      </div>
       <div className="row">
         <div className="side">
           <div className="board-heading">
-            <h3>Player</h3>
+            <h3>Player Board</h3>
           </div>
           <div className="board-container">
             {["", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J"].map(
@@ -156,19 +170,22 @@ function App() {
               </>
             ))}
           </div>
-          <button
-            onClick={() =>
-              setDirection((currentDirection) =>
-                currentDirection === "vertical" ? "horizontal" : "vertical"
-              )
-            }
-          >
-            {direction}
-          </button>
+          <div className="button-wrapper">
+            <button
+              className="button"
+              onClick={() =>
+                setDirection((currentDirection) =>
+                  currentDirection === "vertical" ? "horizontal" : "vertical"
+                )
+              }
+            >
+              Ship orientation: {direction}
+            </button>
+          </div>
         </div>
         <div className="side">
           <div className="board-heading">
-            <h3>Computer</h3>
+            <h3>Computer Board</h3>
           </div>
           <div className="board-container">
             {["", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J"].map(
@@ -193,7 +210,7 @@ function App() {
           </div>
         </div>
       </div>
-      <div className="footer">Made be Cheso7</div>
+      <div className="footer">Made by Cheso7</div>
     </div>
   );
 }

@@ -6,37 +6,41 @@
 body {
   font-family: Arial;
   margin: 0;
+  color: #303036;
 }
 
 /* Header/logo Title */
 .header {
-  padding: 60px;
+  padding: 5px;
   text-align: center;
-  background: #1abc9c;
-  color: white;
+  background: #fc5130;
+  color: FFFAFF;
 }
 
 .navbar {
   display: flex;
-  background-color: #333;
-  color: white;
+  background-color: #fffaff;
+  color: FFFAFF;
 }
 
 .row {
   display: flex;
+  justify-content: center;
   flex-wrap: wrap;
+  background-color: #fffaff;
 }
 
 .side {
   flex: 50%;
-  background-color: #f1f1f1;
-  padding: 20px;
+  background-color: #fffaff;
+  padding: 5px;
 }
 
 .footer {
   padding: 20px;
   text-align: center;
-  background: #ddd;
+  background-color: #303036;
+  color: #fffaff;
 }
 
 @media screen and (max-width: 700px) {
@@ -48,7 +52,7 @@ body {
 
 .board-container {
   display: grid;
-  grid-template-columns: repeat(11, 25px);
+  grid-template-columns: repeat(11, 2.2rem);
   justify-content: center;
   align-items: center;
 }
@@ -57,8 +61,8 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #1abc9c;
-  height: 25px;
+  background-color: #fffaff;
+  height: 2.2rem;
   border-style: solid;
   border-width: 0.5px;
 }
@@ -67,8 +71,8 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: black;
-  height: 25px;
+  background-color: #303036;
+  height: 2.2rem;
   border-style: solid;
   border-width: 0.5px;
 }
@@ -77,17 +81,18 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: red;
-  height: 25px;
+  background-color: #fc5130;
+  height: 2.2rem;
   border-style: solid;
   border-width: 0.5px;
 }
+
 .board-tile-miss {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: blue;
-  height: 25px;
+  background-color: #30bced;
+  height: 2.2rem;
   border-style: solid;
   border-width: 0.5px;
 }
@@ -96,13 +101,52 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: white;
-  height: 25px;
+  background-color: #fffaff;
+  height: 2.2rem;
   border-style: solid;
   border-width: 0.5px;
+  font-weight: bold;
 }
 
-.board-heading{
+.board-heading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+h3 {
+  margin: 15px;
+}
+
+.button {
+  padding: 10px;
+  border-radius: 5px;
+  margin: 20px;
+  background-color: #fc5130;
+  border-width: 0.2px;
+  border-color: #303036;
+  color: #303036;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.message-board {
+  display: flex;
+  background-color: #303036;
+  justify-content: center;
+  align-items: center;
+  color: #fffaff;
+  padding: 10px;
+  width: 300px;
+  text-align: center;
+  font-weight: 500;
+  border-style: solid;
+  border-width: 0.05rem;
+  border-radius: 8px;
+  margin: 10px;
+}
+
+.button-wrapper {
   display: flex;
   justify-content: center;
   align-items: center;
