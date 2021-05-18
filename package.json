@@ -1,6 +1,7 @@
 {
   "name": "tdd-battleship",
   "version": "0.1.0",
+  "homepage": "https://cheso7.github.io/tdd-battleship/",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.12.0",

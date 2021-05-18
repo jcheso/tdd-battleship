@@ -6,6 +6,7 @@ import Ship from "./components/Ship";
 import GameTileComputer from "./components/GameTileComputer";
 import GameTilePlayer from "./components/GameTilePlayer";
 import _, { random } from "underscore";
+import gitLogo from "./assets/GitHub-Mark-Light-32px.png";
 
 var uniqid = require("uniqid");
 
@@ -210,7 +211,14 @@ function App() {
           </div>
         </div>
       </div>
-      <div className="footer">Made by Cheso7</div>
+      <div>
+        <a className="footer" href="https://github.com/Cheso7">
+          <div className="footer-item">Made by Cheso7</div>
+          <div className="footer-item">
+            <img src={gitLogo} alt="GitHub Logo"></img>
+          </div>
+        </a>
+      </div>
     </div>
   );
 }
