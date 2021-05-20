@@ -41,4 +41,4 @@ const Ship = (shipClass) => {
   return { id, length, isSunk, hit, hitArray };
 };
 
-export default Ship;
+module.exports = Ship;

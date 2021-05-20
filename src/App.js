@@ -60,7 +60,6 @@ function App() {
         const y = generateCoordinates().y;
         const direction = randomDirection();
         const ship = computerShipList[computerShipCount];
-        console.log(x, y, direction, ship);
 
         if (
           computerBoard.isBoardClear(ship, x, y, direction) &&
@@ -124,6 +123,7 @@ function App() {
             tempBoard.receiveAttack(computerAttack.x, computerAttack.y);
             return tempBoard;
           });
+
           setLoading(false);
         }, 500);
       }
@@ -153,12 +153,16 @@ function App() {
           <div className="board-container">
             {["", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J"].map(
               (letter) => (
-                <div className="board-tile-heading">{letter}</div>
+                <div key={uniqid()} className="board-tile-heading">
+                  {letter}
+                </div>
               )
             )}
             {playerBoard.board.map((row, rowIndex) => (
               <>
-                <div className="board-tile-heading">{rowIndex + 1}</div>
+                <div key={uniqid()} className="board-tile-heading">
+                  {rowIndex + 1}
+                </div>
                 {row.map((tile, columnIndex) => (
                   <GameTilePlayer
                     onClick={placeShip}
@@ -191,12 +195,16 @@ function App() {
           <div className="board-container">
             {["", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J"].map(
               (letter) => (
-                <div className="board-tile-heading">{letter}</div>
+                <div key={uniqid()} className="board-tile-heading">
+                  {letter}
+                </div>
               )
             )}
             {computerBoard.board.map((row, rowIndex) => (
               <>
-                <div className="board-tile-heading">{rowIndex + 1}</div>
+                <div key={uniqid()} className="board-tile-heading">
+                  {rowIndex + 1}
+                </div>
                 {row.map((tile, columnIndex) => (
                   <GameTileComputer
                     onClick={gameLoop}

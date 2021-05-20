@@ -53,6 +53,7 @@ const Gameboard = () => {
   };
 
   // Receive attack function that takes coordinates and determines if ship has been hit
+
   const receiveAttack = (x, y) => {
     if (
       typeof board[x][y] == "object" &&
@@ -62,15 +63,19 @@ const Gameboard = () => {
       if (board[x][y].ship.isSunk() === true) {
         sunkCount++;
       }
+      console.log("hit");
+      return "hit";
     } else if (
       (typeof board[x][y] == "object" &&
         board[x][y].ship.hitArray[board[x][y].i] === "hit") ||
       board[x][y] === "miss"
     ) {
-      console.log("You've already fired here");
+      console.log("You've already hit here");
+      return "You've already hit here";
     } else {
       board[x][y] = "miss";
       console.log("miss");
+      return "miss";
     }
   };
 
@@ -91,4 +96,4 @@ const Gameboard = () => {
   };
 };
 
-export default Gameboard;
+module.exports = Gameboard;
